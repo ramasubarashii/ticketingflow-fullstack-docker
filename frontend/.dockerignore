@@ -1,0 +1,23 @@
+# ─── .dockerignore untuk Frontend React/Vite ─────────────────────────────────
+# Dependensi (akan diinstall ulang di dalam container)
+node_modules
+npm-debug.log*
+
+# Build output
+dist
+build
+
+# File environment
+.env
+.env.local
+.env.production
+
+# File IDE dan OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Docker files itu sendiri
+Dockerfile
+.dockerignore

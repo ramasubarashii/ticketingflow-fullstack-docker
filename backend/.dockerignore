@@ -1,0 +1,31 @@
+# ─── .dockerignore untuk Backend Laravel ─────────────────────────────────────
+# File ini memberitahu Docker untuk TIDAK menyalin folder/file berikut
+# ke dalam image — mempercepat build dan memperkecil ukuran image
+
+# Dependensi (akan diinstall ulang di dalam container)
+/vendor
+/node_modules
+
+# File environment (sensitif — jangan masuk ke image)
+.env
+.env.backup
+.env.production
+
+# Cache & Log Laravel
+/storage/logs/*.log
+/bootstrap/cache/*.php
+
+# File Git
+.git
+.gitignore
+.gitattributes
+
+# File IDE dan OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Docker files itu sendiri
+Dockerfile
+.dockerignore
