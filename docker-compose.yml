@@ -1,0 +1,78 @@
+services:
+  # ─── MySQL Database ─────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: ticketingflow_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret
+      MYSQL_DATABASE: client_handling_db
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel_secret
+    ports:
+      - "3307:3306"   # Host:Container — 3307 agar tidak bentrok dengan MySQL lokal Anda
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ticketingflow_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Laravel Backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ticketingflow_backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor   # Named volume: vendor dikelola Docker, bukan dari host
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ticketingflow_net
+    command: >
+      sh -c "composer install --optimize-autoloader --no-interaction &&
+             php artisan config:clear &&
+             php artisan serve --host=0.0.0.0 --port=8000"
+
+  # ─── React Frontend ─────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ticketingflow_frontend
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules   # Isolasi node_modules agar tidak tertimpa mount host
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - ticketingflow_net
+
+# ─── Volumes Persisten ────────────────────────────────────────────────────────
+volumes:
+  mysql_data:
+    driver: local
+  backend_vendor:
+    driver: local
+
+# ─── Internal Network ─────────────────────────────────────────────────────────
+networks:
+  ticketingflow_net:
+    driver: bridge
