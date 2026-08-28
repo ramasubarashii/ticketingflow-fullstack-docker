@@ -15,25 +15,28 @@ return new class extends Migration
         Schema::table('tickets', function (Blueprint $table) {
             $table->foreignId('claimed_programmer_id')
                 ->nullable()
-                ->after('user_id')
                 ->constrained('users')
                 ->nullOnDelete();
         });
 
-        DB::statement("ALTER TABLE tickets MODIFY COLUMN status ENUM(
-            'pending_confirmation',
-            'open',
-            'escalated_to_pm',
-            'waiting_programmer',
-            'waiting_pm_approval',
-            'assigned',
-            'in_progress',
-            'pending_review',
-            'escalated_to_owner',
-            'resolved',
-            'closed',
-            'rejected'
-        ) NOT NULL DEFAULT 'open'");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE tickets ALTER COLUMN status TYPE VARCHAR(255)");
+        } else {
+            DB::statement("ALTER TABLE tickets MODIFY COLUMN status ENUM(
+                'pending_confirmation',
+                'open',
+                'escalated_to_pm',
+                'waiting_programmer',
+                'waiting_pm_approval',
+                'assigned',
+                'in_progress',
+                'pending_review',
+                'escalated_to_owner',
+                'resolved',
+                'closed',
+                'rejected'
+            ) NOT NULL DEFAULT 'open'");
+        }
     }
 
     /**
@@ -46,17 +49,21 @@ return new class extends Migration
             $table->dropColumn('claimed_programmer_id');
         });
 
-        DB::statement("ALTER TABLE tickets MODIFY COLUMN status ENUM(
-            'pending_confirmation',
-            'open',
-            'escalated_to_pm',
-            'assigned',
-            'in_progress',
-            'pending_review',
-            'escalated_to_owner',
-            'resolved',
-            'closed',
-            'rejected'
-        ) NOT NULL DEFAULT 'open'");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE tickets ALTER COLUMN status TYPE VARCHAR(255)");
+        } else {
+            DB::statement("ALTER TABLE tickets MODIFY COLUMN status ENUM(
+                'pending_confirmation',
+                'open',
+                'escalated_to_pm',
+                'assigned',
+                'in_progress',
+                'pending_review',
+                'escalated_to_owner',
+                'resolved',
+                'closed',
+                'rejected'
+            ) NOT NULL DEFAULT 'open'");
+        }
     }
 };

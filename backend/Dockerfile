@@ -1,7 +1,7 @@
-# ─── Base Image: PHP 8.3 dengan Apache ───────────────────────────────────────
+# ─── Base Image: PHP 8.3 CLI ──────────────────────────────────────────────────
 FROM php:8.3-cli
 
-# ─── Install Dependensi Sistem & Ekstensi PHP ────────────────────────────────
+# ─── Install Dependensi Sistem & Ekstensi PHP (termasuk PostgreSQL & MySQL) ──
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -9,11 +9,14 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    libpq-dev \
     zip \
     unzip \
     && docker-php-ext-install \
         pdo \
         pdo_mysql \
+        pdo_pgsql \
+        pgsql \
         mbstring \
         exif \
         pcntl \
@@ -32,7 +35,7 @@ WORKDIR /var/www/html
 # ─── Salin File Project ──────────────────────────────────────────────────────
 COPY . .
 
-# ─── Install Dependensi PHP (Composer) — include dev packages ────────────────
+# ─── Install Dependensi PHP (Composer) ──────────────────────────────────────
 RUN composer install --optimize-autoloader --no-interaction
 
 # ─── Set Permission Folder Storage & Cache ───────────────────────────────────

@@ -1,22 +1,21 @@
 services:
-  # ─── MySQL Database ─────────────────────────────────────────────────────────
+  # ─── PostgreSQL Database ───────────────────────────────────────────────────
   db:
-    image: mysql:8.0
+    image: postgres:16-alpine
     container_name: ticketingflow_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root_secret
-      MYSQL_DATABASE: client_handling_db
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: laravel_secret
+      POSTGRES_DB: ticketingflow_db
+      POSTGRES_USER: laravel
+      POSTGRES_PASSWORD: laravel_secret
     ports:
-      - "3307:3306"   # Host:Container — 3307 agar tidak bentrok dengan MySQL lokal Anda
+      - "15432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - pgdata:/var/lib/postgresql/data
     networks:
       - ticketingflow_net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U laravel -d ticketingflow_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,7 +30,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
-      - backend_vendor:/var/www/html/vendor   # Named volume: vendor dikelola Docker, bukan dari host
+      - backend_vendor:/var/www/html/vendor   # Named volume: vendor dikelola Docker
     ports:
       - "8000:8000"
     environment:
@@ -57,7 +56,7 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
-      - /app/node_modules   # Isolasi node_modules agar tidak tertimpa mount host
+      - /app/node_modules   # Isolasi node_modules
     ports:
       - "5173:5173"
     depends_on:
@@ -67,7 +66,7 @@ services:
 
 # ─── Volumes Persisten ────────────────────────────────────────────────────────
 volumes:
-  mysql_data:
+  pgdata:
     driver: local
   backend_vendor:
     driver: local

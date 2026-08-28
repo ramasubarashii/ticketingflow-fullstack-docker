@@ -8,29 +8,14 @@ return new class extends Migration
 {
     /**
      * Add walk-in/non-user reporter fields to tickets table.
-     * These fields are only populated when Service Desk creates a ticket
-     * on behalf of a client who is not registered in the system.
      */
     public function up(): void
     {
         Schema::table('tickets', function (Blueprint $table) {
-            // Name of the external/non-system reporter (walk-in client)
-            $table->string('reporter_name')->nullable()->after('user_id');
-
-            // Contact info of the reporter (phone/WA/email)
-            $table->string('reporter_contact')->nullable()->after('reporter_name');
-
-            // How the reporter contacted Service Desk
-            $table->enum('contact_method', [
-                'whatsapp',
-                'telepon',
-                'email',
-                'walk_in',
-                'lainnya',
-            ])->nullable()->after('reporter_contact');
-
-            // Free-text notes when contact_method = 'lainnya'
-            $table->string('contact_method_notes')->nullable()->after('contact_method');
+            $table->string('reporter_name')->nullable();
+            $table->string('reporter_contact')->nullable();
+            $table->string('contact_method')->nullable();
+            $table->string('contact_method_notes')->nullable();
         });
     }
 
