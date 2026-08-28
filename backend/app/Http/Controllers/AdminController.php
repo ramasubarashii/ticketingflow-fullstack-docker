@@ -151,7 +151,7 @@ class AdminController extends Controller
     // ─── GET /admin/stats ─────────────────────────────────────────────────────────
     public function getStats()
     {
-        $userStats = User::selectRaw('role, COUNT(*) as total, SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active')
+        $userStats = User::selectRaw('role, COUNT(*) as total, SUM(CASE WHEN is_active IS TRUE THEN 1 ELSE 0 END) as active')
             ->where('role', '!=', 'admin')
             ->groupBy('role')
             ->get()
