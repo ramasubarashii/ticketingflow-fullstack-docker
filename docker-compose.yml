@@ -32,7 +32,7 @@ services:
       - ./backend:/var/www/html
       - backend_vendor:/var/www/html/vendor   # Named volume: vendor dikelola Docker
     ports:
-      - "8000:8000"
+      - "18000:8000"
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
@@ -61,6 +61,8 @@ services:
       - "5173:5173"
     depends_on:
       - backend
+    environment:
+      - VITE_API_URL=http://localhost:18000/api
     networks:
       - ticketingflow_net
 

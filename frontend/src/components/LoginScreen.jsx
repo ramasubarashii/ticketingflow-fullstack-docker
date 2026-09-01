@@ -36,8 +36,8 @@ export const LoginScreen = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-canvas p-6">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg p-10 text-left">
+    <div className="min-h-screen flex items-center justify-center bg-canvas p-4 sm:p-6">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl p-6 sm:p-10 text-left shadow-sm">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-extrabold tracking-tight text-primary">
             Ticketing System
